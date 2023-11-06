@@ -33,7 +33,7 @@ app.get('/fruits', async (req, res) => {
 			for (let i = 0; i < remainder; i++) {
 				let randomIndex = Math.floor(random(0, fruitData.length));
 				let randomDoc = fruitData[randomIndex];
-				console.log(randomDoc);
+				console.log(randomIndex, randomDoc);
 				search.push({ ref: randomDoc._id, score: 0 });
 			}
 		}
