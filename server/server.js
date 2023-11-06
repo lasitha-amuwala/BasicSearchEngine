@@ -86,6 +86,8 @@ app.get('/fruits/:id', async (req, res) => {
 	if (req.params.id) {
 		let { url, title, pageRank, content, outgoingLinks, incomingLinks } = await fruitData.find(({ _id }) => _id == req.params.id);
 
+		const frequency = wordFrequency(content);
+
 		const html = `<div>
 		<a href=${url}>${url}</a>
 		<p>title: ${title}</p>
@@ -93,11 +95,14 @@ app.get('/fruits/:id', async (req, res) => {
 		<p>pr: ${pageRank}</p>
 		OutgoingLinks:<ul>${outgoingLinks.data.map((link) => `<li>${link}</li>`)}</ul>
 		IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`)}</ul>
+		Word Frequency:<ul>${Object.keys(frequency)
+			.map((key) => `<li>${key}: ${frequency[key]}</li>`)
+			.join('')}</ul>
 		</div>`;
 
 		res.format({
 			html: () => res.status(200).send(html),
-			json: () => res.send(JSON.stringify({ url, title, pageRank, content, outgoingLinks, incomingLinks })),
+			json: () => res.send(JSON.stringify({ url, title, pageRank, content, outgoingLinks, incomingLinks, wordFrequency: frequency })),
 		});
 	} else {
 		res.status(404).send('Page not found');
@@ -182,6 +187,10 @@ app.get('/personalById', async (req, res) => {
 		let data = await personalData.find(({ _id }) => _id == req.query.id);
 
 		const { url, title, movieTitle, rating, director, description, tagline, year, pageRank, outgoingLinks, incomingLinks } = data;
+
+		const str = movieTitle.concat(description);
+		const frequency = wordFrequency(str);
+
 		res.format({
 			html: () =>
 				res.status(200).send(
@@ -196,11 +205,27 @@ app.get('/personalById', async (req, res) => {
 							<p>pr: ${pageRank}</p>
 							OutgoingLinks:<ul>${outgoingLinks.data.map((link) => `<li>${link}</li>`).join('')}</ul>
 							IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`).join('')}</ul>
+							Word Frequency:<ul>${Object.keys(frequency)
+								.map((key) => `<li>${key}: ${frequency[key]}</li>`)
+								.join('')}</ul>
 					</div>`
 				),
 			json: () =>
 				res.send(
-					JSON.stringify({ url, title, movieTitle, rating, director, description, tagline, year, pageRank, outgoingLinks, incomingLinks })
+					JSON.stringify({
+						url,
+						title,
+						movieTitle,
+						rating,
+						director,
+						description,
+						tagline,
+						year,
+						pageRank,
+						outgoingLinks,
+						incomingLinks,
+						wordFrequency: frequency,
+					})
 				),
 		});
 	} else {
@@ -208,7 +233,17 @@ app.get('/personalById', async (req, res) => {
 	}
 });
 
-let random = (min, max) => Math.random() * (max - min) + min;
+const wordFrequency = (str) => {
+	let words = str.replace(/[^a-zA-Z0-9]/, ' ').split(/\s/);
+	let frequencies = {};
+	words.forEach((word) => {
+		if (!frequencies[word]) frequencies[word] = 0;
+		frequencies[word] += 1;
+	});
+	return frequencies;
+};
+
+const random = (min, max) => Math.random() * (max - min) + min;
 
 let indexFruits = elasticlunr(function () {
 	this.addField('title');
