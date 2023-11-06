@@ -11,7 +11,7 @@ const client = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true
 let db;
 let fruitData;
 let personalData;
-const baseURL = 'http://localhost:8080';
+const serverBaseURL = 'http://localhost:3000';
 
 app.use(cors());
 
@@ -200,13 +200,13 @@ const run = async () => {
 	personalData.forEach(({ _id, title, description, movieTitle }) => indexPersonal.addDoc({ id: _id, title, movieTitle, description }));
 
 	app.listen(port, () => console.log('Server listening on port', port));
-
-	const res = await axios
-		.put('http://134.117.130.17:3000/searchengines', JSON.stringify({ request_url: 'http://134.117.133.246:3000/' }), {
-			headers: { 'content-type': 'application/json' },
-		})
-		.then((res) => console.log(res.response))
-		.catch((err) => console.log('Error', err));
+	
+	// await axios
+	// 	.put('http://134.117.130.17:3000/searchengines', JSON.stringify({ request_url: serverBaseURL }), {
+	// 		headers: { 'content-type': 'application/json' },
+	// 	})
+	// 	.then((res) => console.log(res.response))
+	// 	.catch((err) => console.log('Error', err));
 
 	// console.log('client closing');
 	// Ensures that the client will close when you finish/error
