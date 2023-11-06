@@ -115,7 +115,7 @@ app.get('/personal', async (req, res) => {
 		if (search.length < limit) {
 			let remainder = limit - search.length;
 			for (let i = 0; i < remainder; i++) {
-				let randomIndex = Math.floor(random(0, personalData.length));
+				let randomIndex = Math.floor(random(0, 1000));
 				let randomDoc = personalData[randomIndex];
 				search.push({ ref: randomDoc._id, score: 0 });
 			}
@@ -193,14 +193,16 @@ const run = async () => {
 		console.log(e);
 	}
 
-	fruitData = await fruits.find({}).toArray();
-	personalData = await personal.find({}).toArray();
 	console.log('Indexed fruit data');
+	fruitData = await fruits.find({}).toArray();
 	fruitData.forEach(({ _id, title, content }) => indexFruits.addDoc({ id: _id, title, content }));
+
+	console.log('Indexed personal data');
+	personalData = await personal.find({}).toArray();
 	personalData.forEach(({ _id, title, description, movieTitle }) => indexPersonal.addDoc({ id: _id, title, movieTitle, description }));
 
 	app.listen(port, () => console.log('Server listening on port', port));
-	
+
 	// await axios
 	// 	.put('http://134.117.130.17:3000/searchengines', JSON.stringify({ request_url: serverBaseURL }), {
 	// 		headers: { 'content-type': 'application/json' },
