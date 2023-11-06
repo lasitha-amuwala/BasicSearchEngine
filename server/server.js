@@ -140,7 +140,7 @@ app.get('/personal', async (req, res) => {
 			title,
 			score,
 			pr: pageRank,
-			dataLink: `${baseURL}/personal${encodeURI(_id)}`,
+			dataLink: `${serverBaseURL}/personal${encodeURI(_id)}`,
 		}));
 
 		res.format({
