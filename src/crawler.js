@@ -37,7 +37,7 @@ const crawlSite = async (baseURL, seed, scraper) => {
 					visited.push(currentPage);
 					const { links, ...data } = scraper(res);
 					console.log(`[${indexLength}] crawling`, pageURL, links.length);
-					// console.log(data.title, data.tagline, data.director)
+
 					let outgoingLinks = [];
 					// loop over links and add to queue if not visited and not already in queue
 					links.forEach((link) => {
@@ -128,10 +128,10 @@ const run = async () => {
 		console.log('[DATABASE]: Connection opened successfully');
 
 		// crawl fruitgraph site
-		// console.log('\nCRAWLING FRUIT SITE');
-		// const fruitData = await crawlSite('https://people.scs.carleton.ca/~davidmckenney/fruitgraph', 'N-0.html', scrapeFruitPage);
-		// console.log('\nSTORING FRUIT DATA');
-		// await storeToDB('fruitgraph', fruitData); // store crawled data in database
+		console.log('\nCRAWLING FRUIT SITE');
+		const fruitData = await crawlSite('https://people.scs.carleton.ca/~davidmckenney/fruitgraph', 'N-0.html', scrapeFruitPage);
+		console.log('\nSTORING FRUIT DATA');
+		await storeToDB('fruitgraph', fruitData); // store crawled data in database
 
 		// crawl personal site
 		console.log('\nCRAWLING PERSONAL SITE');
@@ -140,16 +140,16 @@ const run = async () => {
 		await storeToDB('personal', personalData); // store crawled data in database
 
 		// get crawled data from the database to perform pageRank
-		// const crawledFruitData = await fruit.find().toArray();
+		const crawledFruitData = await fruit.find().toArray();
 		const crawledPersonalData = await personal.find().toArray();
 
 		// compute pageRank on crawled data
-		// const fruitPageRanks = await computePageRank(crawledFruitData, 0.1);
+		const fruitPageRanks = await computePageRank(crawledFruitData, 0.1);
 		const personalPageRanks = computePageRank(crawledPersonalData, 0.1);
 
 		// add pageRank scores to database
-		// console.log('[DATABASE]: updating fruits with pageRank');
-		// fruitPageRanks.forEach(async ({ _id, pageRank }) => await fruit.updateOne({ _id }, { $set: { pageRank } }));
+		console.log('[DATABASE]: updating fruits with pageRank');
+		fruitPageRanks.forEach(async ({ _id, pageRank }) => await fruit.updateOne({ _id }, { $set: { pageRank } }));
 		console.log('[DATABASE]: updating personal with pageRank');
 		personalPageRanks.forEach(async ({ _id, pageRank }) => await personal.updateOne({ _id }, { $set: { pageRank } }));
 	} catch (e) {
