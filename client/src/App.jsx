@@ -20,8 +20,7 @@ function App() {
 		setFruitSearchResults(data);
 	};
 
-
-  const [personalSearch, setPersonalSearch] = useState('');
+	const [personalSearch, setPersonalSearch] = useState('');
 	const [personalSearchResults, setPersonalSearchResults] = useState('No results...');
 	const [boostPersonal, setBoostPersonal] = useState(false);
 	const [limitPersonal, setLimitPersonal] = useState(10);
@@ -38,10 +37,9 @@ function App() {
 		setPersonalSearchResults(data);
 	};
 
-
 	return (
 		<>
-			<div style={{ paddingBottom: 100}}>
+			<div style={{ paddingBottom: 100 }}>
 				<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
 					<label>
 						Fruit Search:
@@ -60,7 +58,9 @@ function App() {
 						<input type='checkbox' checked={boostFruit} onChange={() => setBoostFruit(!boostFruit)} />
 						Boost
 					</label>
-					<button onClick={handleOnFruitSearchClick}>Search</button>
+					<button disabled={fruitSearch == ''} onClick={handleOnFruitSearchClick}>
+						Search
+					</button>
 				</div>
 				<h3>Results:</h3>
 				<div style={{ height: 400, maxHeight: 400, overflowY: 'auto' }}>{parse(fruitSearchResults)}</div>
@@ -84,7 +84,9 @@ function App() {
 						<input type='checkbox' checked={boostPersonal} onChange={() => setBoostPersonal(!boostPersonal)} />
 						Boost
 					</label>
-					<button onClick={handleOnPersonalSearchClick}>Search</button>
+					<button disabled={personalSearch == ''} onClick={handleOnPersonalSearchClick}>
+						Search
+					</button>
 				</div>
 				<h3>Results:</h3>
 				<div style={{ maxHeight: 500, overflowY: 'auto' }}>{parse(personalSearchResults)}</div>
