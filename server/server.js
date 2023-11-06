@@ -11,8 +11,8 @@ const client = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true
 let db;
 let fruitData;
 let personalData;
-// const serverBaseURL = 'http://134.117.133.246:3000';
-const serverBaseURL = 'http://localhost:3000';
+const serverBaseURL = 'http://134.117.133.246:3000';
+// const serverBaseURL = 'http://localhost:3000';
 
 app.use(cors());
 
@@ -86,15 +86,17 @@ app.get('/fruits/:id', async (req, res) => {
 	if (req.params.id) {
 		let { url, title, pageRank, content, outgoingLinks, incomingLinks } = await fruitData.find(({ _id }) => _id == req.params.id);
 
+		const html = `<div>
+		<a href=${url}>${url}</a>
+		<p>title: ${title}</p>
+		<p>content: ${content}</p>
+		<p>pr: ${pageRank}</p>
+		OutgoingLinks:<ul>${outgoingLinks.data.map((link) => `<li>${link}</li>`)}</ul>
+		IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`)}</ul>
+		</div>`;
+
 		res.format({
-			html: () =>
-				res
-					.status(200)
-					.send(
-						`<div><a href=${url}>${url}</a><p>title: ${title}</p><p>content: ${content}</p><p>pr: ${pageRank}</p>OutgoingLinks:<ul>${outgoingLinks.data.map(
-							(link) => `<li>${link}</li>`
-						)}</ul>IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`)}</ul></div>`
-					),
+			html: () => res.status(200).send(html),
 			json: () => res.send(JSON.stringify({ url, title, pageRank, content, outgoingLinks, incomingLinks })),
 		});
 	} else {
@@ -137,21 +139,29 @@ app.get('/personal', async (req, res) => {
 			searchResults = rankedPersonalData.sort((a, b) => b.indexScore - a.indexScore);
 		}
 
-		searchResults = searchResults.slice(0, limit).map(({ url, score, title, pageRank, _id }) => ({
-			name: 'Lasitha Amuwala',
-			url,
-			title,
-			score,
-			pr: pageRank,
-			dataLink: `${serverBaseURL}/personal${encodeURI(_id)}`,
-		}));
+		searchResults = searchResults.slice(0, limit).map(({ url, score, title, pageRank, _id }) => {
+			const params = new URLSearchParams({ id: _id });
+			const linkToData = `${serverBaseURL}/personalById?${params.toString()}`;
+			return {
+				name: 'Lasitha Amuwala',
+				url,
+				title,
+				score,
+				pr: pageRank,
+				data: linkToData,
+			};
+		});
 
 		res.format({
 			html: () => {
 				res.status(200).send(
 					`<ul>${searchResults
 						.map(({ url, title, score, pr }) => {
-							return `<li><a href=${url}>${url}</a><p>title: ${title}</p><p>score: ${score}</p><p>pr: ${pr}</p></li>`;
+							return `<li>
+							<a href=${url}>${url}</a>
+							<p>title: ${title}</p>
+							<p>score: ${score}</p>
+							<p>pr: ${pr}</p></li>`;
 						})
 						.join('')}</ul>`
 				);
@@ -167,6 +177,37 @@ app.get('/personal', async (req, res) => {
 	}
 });
 
+app.get('/personalById', async (req, res) => {
+	if (req.query.id) {
+		let data = await personalData.find(({ _id }) => _id == req.query.id);
+
+		const { url, title, movieTitle, rating, director, description, tagline, year, pageRank, outgoingLinks, incomingLinks } = data;
+		res.format({
+			html: () =>
+				res.status(200).send(
+					`<div>
+							<a href=${url}>${url}</a>
+							<p>Title: ${title}</p>
+							<p>Movie title: ${movieTitle}</p>
+							<p>Director: ${director}</p>
+							<p>Description: ${description}</p>
+							<p>Tagline: ${tagline}</p>
+							<p>Year: ${year}</p>
+							<p>pr: ${pageRank}</p>
+							OutgoingLinks:<ul>${outgoingLinks.data.map((link) => `<li>${link}</li>`).join('')}</ul>
+							IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`).join('')}</ul>
+					</div>`
+				),
+			json: () =>
+				res.send(
+					JSON.stringify({ url, title, movieTitle, rating, director, description, tagline, year, pageRank, outgoingLinks, incomingLinks })
+				),
+		});
+	} else {
+		res.status(404).send('Page not found');
+	}
+});
+
 let random = (min, max) => Math.random() * (max - min) + min;
 
 let indexFruits = elasticlunr(function () {
@@ -176,8 +217,8 @@ let indexFruits = elasticlunr(function () {
 });
 
 let indexPersonal = elasticlunr(function () {
-	this.addField('title', { boost: 1 });
-	this.addField('movieTitle', { boost: 2 });
+	this.addField('title', { boost: 2 });
+	this.addField('movieTitle', { boost: 3 });
 	this.addField('description', { boost: 1 });
 	this.setRef('id');
 });
