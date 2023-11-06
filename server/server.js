@@ -84,16 +84,18 @@ app.get('/fruits', async (req, res) => {
 
 app.get('/fruits/:id', async (req, res) => {
 	if (req.params.id) {
-		let { url, title, pageRank, content, outgoingList } = await fruitData.find(({ _id }) => _id == req.params.id);
+		let { url, title, pageRank, content, outgoingLinks, incomingLinks } = await fruitData.find(({ _id }) => _id == req.params.id);
 
 		res.format({
 			html: () =>
 				res
 					.status(200)
 					.send(
-						`<div><a href=${url}>${url}</a><p>title: ${title}</p><p>content: ${content}</p><p>pr: ${pageRank}</p><p>${outgoingList}</p></div>`
+						`<div><a href=${url}>${url}</a><p>title: ${title}</p><p>content: ${content}</p><p>pr: ${pageRank}</p>OutgoingLinks:<ul>${outgoingLinks.data.map(
+							(link) => `<li>${link}</li>`
+						)}</ul>IncomingLinks:<ul>${incomingLinks.data.map((link) => `<li>${link}</li>`)}</ul></div>`
 					),
-			json: () => res.send(JSON.stringify(searchResults)),
+			json: () => res.send(JSON.stringify({ url, title, pageRank, content, outgoingLinks, incomingLinks })),
 		});
 	} else {
 		res.status(404).send('Page not found');
