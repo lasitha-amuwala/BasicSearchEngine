@@ -11,7 +11,7 @@ const client = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true
 let db;
 let fruitData;
 let personalData;
-const serverBaseURL = 'http://localhost:3000';
+const serverBaseURL = 'http://134.117.133.246:3000';
 
 app.use(cors());
 
@@ -57,14 +57,14 @@ app.get('/fruits', async (req, res) => {
 			title,
 			score,
 			pr: pageRank,
-			dataLink: `${baseURL}/fruits/${encodeURI(_id)}`,
+			dataLink: `${serverBaseURL}/fruits/${encodeURI(_id)}`,
 		}));
 
 		res.format({
 			html: () => {
 				res.status(200).send(
 					`<ul>${searchResults
-						.map(({ url, title, score, pageRank }) => {
+						.map(({ url, title, score, pageRank, dataLink }) => {
 							return `<li><a href=${url}>${url}</a><p>title: ${title}</p><p>score: ${score}</p><p>pr: ${pageRank}</p><p>${dataLink}</p></li>`;
 						})
 						.join('')}</ul>`
