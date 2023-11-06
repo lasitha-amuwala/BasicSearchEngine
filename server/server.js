@@ -115,7 +115,7 @@ app.get('/personal', async (req, res) => {
 		if (search.length < limit) {
 			let remainder = limit - search.length;
 			for (let i = 0; i < remainder; i++) {
-				let randomIndex = Math.floor(random(0, 1000));
+				let randomIndex = Math.floor(random(0, personalData.length));
 				let randomDoc = personalData[randomIndex];
 				search.push({ ref: randomDoc._id, score: 0 });
 			}
