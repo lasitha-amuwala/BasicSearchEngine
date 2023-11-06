@@ -1,0 +1,23 @@
+{
+	"name": "basic-search-engine",
+	"version": "1.0.0",
+	"description": "",
+	"workspaces": [
+		"client",
+		"server"
+	],
+	"main": "src/main.js",
+	"scripts": {
+		"start": "node src/main.js"
+	},
+	"author": "Lasitha Amuwala",
+	"license": "ISC",
+	"dependencies": {
+		"crawler": "^1.4.0",
+		"ml-distance-euclidean": "^2.0.0",
+		"ml-matrix": "^6.10.7"
+	},
+	"devDependencies": {
+		"typescript": "^5.2.2"
+	}
+}
