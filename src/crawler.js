@@ -145,7 +145,7 @@ const run = async () => {
 
 		// compute pageRank on crawled data
 		const fruitPageRanks = await computePageRank(crawledFruitData, 0.1);
-		const personalPageRanks = computePageRank(crawledPersonalData, 0.1);
+		const personalPageRanks = await computePageRank(crawledPersonalData, 0.1);
 
 		// add pageRank scores to database
 		console.log('[DATABASE]: updating fruits with pageRank');

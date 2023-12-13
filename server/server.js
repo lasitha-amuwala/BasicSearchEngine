@@ -18,7 +18,10 @@ app.use(cors());
 
 app.get('/fruits', async (req, res) => {
 	try {
-		if (!req.query.q) res.status(404).send('Endpoint Not Found');
+		if (!req.query.q) {
+			res.status(404).send('Endpoint Not Found');
+			return;
+		}
 
 		let limit = 10;
 		let search = indexFruits.search(req.query.q, {});
@@ -111,7 +114,10 @@ app.get('/fruits/:id', async (req, res) => {
 
 app.get('/personal', async (req, res) => {
 	try {
-		if (!req.query.q) res.status(404).send('Endpoint Not Found');
+		if (!req.query.q){
+			res.status(404).send('Endpoint Not Found');
+			return;
+		} 
 
 		let limit = 10;
 		let search = indexPersonal.search(req.query.q, {});
