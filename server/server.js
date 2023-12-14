@@ -11,8 +11,8 @@ const client = new MongoClient('mongodb://127.0.0.1:27017/?directConnection=true
 let db;
 let fruitData;
 let personalData;
-// const serverBaseURL = 'http://134.117.133.246:3000';
-const serverBaseURL = 'http://localhost:3000';
+const serverBaseURL = 'http://134.117.133.246:3000';
+// const serverBaseURL = 'http://localhost:3000';
 
 app.use(cors());
 
